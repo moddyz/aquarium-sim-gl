@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <list>
+
+#ifndef _SIMULATION_SYSTEM
+#define _SIMULATION_SYSTEM
+
+#include "vector_types.h"
+
+#define _SIM_BODY_MODE_CALM
+#define _SIM_BODY_MODE_PANIC
+
+
+typedef struct
+{
+    unsigned int id;
+    int mode;
+    int type;
+    v3f position;
+    v3f velocity;
+    float theta;
+    float phi;
+    float scale;
+} Body;
+
+typedef struct
+{
+    unsigned int id;
+    int type;
+    v3f position;
+} Particle;
+
+typedef struct
+{
+    float speed;
+    int idCount;
+    int maxBodyCount;
+    int maxParticleCount;
+    v3f center;
+    v3f bounds;
+
+    std::list<Body> bodyContainer;
+    std::list<Particle> particleContainer;
+} SimulationSystem;
+
+
+// Configures simulation system
+int configureSimulation(SimulationSystem *sim, const char* configFile);
+int initializeSimulation(SimulationSystem *sim);
+
+// Spawns a body, returns body id
+int spawnBody(SimulationSystem *sim);
+
+// Spawns particle, returns particle id
+int spawnParticle(SimulationSystem *sim);
+
+// Step system with time delta
+int stepSystem(SimulationSystem *sim, float delta);
+
+// Flocking rules
+void bodySimulation(Body* body, std::list<Body> *container);
+void bodySeparation(v3f *v, std::list<Body> *container);
+void bodyAlignment(v3f *v, std::list<Body> *container);
+void bodyCohesion(std::list<Body> *container, v3f *v);
+
+
+#endif
